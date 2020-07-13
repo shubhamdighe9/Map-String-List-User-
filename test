@@ -1,0 +1,44 @@
+   @AuraEnabled
+    public static Map<String,list<User>> getDepartmentUsers() {
+     Showing department wise users where department is in a key and users are in list in a map of MAp<String,List<User>>   
+        Map<String,String> userDeptIdMap = new Map<String,String>();
+        Map<String,list<User>> userDeptMap = new Map<String,list<User>>();
+        Map<Id,User> userMap = new Map<Id,User>();
+        for(User u:[Select Id,Name from User]){
+            userMap.put(u.Id, u);
+        }
+        for(GD_User_Organization_Assignments__c uoa :[SELECT Id, Name, GD_User__c,GD_Department__c,GD_Department__r.Name FROM
+                                                      GD_User_Organization_Assignments__c]){
+                                                          if(!userDeptMap.containsKey(uoa.GD_Department__r.Name))
+                                                          {
+                                                              User u= userMap.get(uoa.GD_User__c);
+                                                              List<User> userList = new List<User>();
+                                                              userList.add(u);
+                                                              userDeptMap.put(uoa.GD_Department__r.Name,userList);
+                                                          }
+                                                          else
+                                                          { 
+                                                              User u= userMap.get(uoa.GD_User__c);
+                                                              List<User> userList = userDeptMap.get(uoa.GD_Department__r.Name);
+                                                              userList.add(u);
+                                                          }
+                                                          
+                                                          
+                                                      }  
+        system.debug('userDeptMap = '+userDeptMap);
+        return userDeptMap;
+    }
+	
+	
+	==============Output============
+	Showind department wise users
+	
+	
+{"Pharma Private":
+[{"Id":"0050C000002AyElQAK","Name":"GD - ME Sales Rep"},
+{"Id":"0050C000001cvNrQAI","Name":"Ahmad Ebrahim"}],
+
+"Medical Equipment":
+[{"Id":"0050C000001cvNrQAI","Name":"Ahmad Ebrahim"},
+{"Id":"0050C000001buNjQAI","Name":"Soundar Rajan"},
+{"Id":"0050C000001buNjQAI","Name":"Soundar Rajan"}]}
