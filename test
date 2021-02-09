@@ -1,4 +1,19 @@
-   @AuraEnabled
+      Map<Project_Smaartt__c, List<Epic_Smaartt__c>> projToEpics = new Map<Project_Smaartt__c, List<Epic_Smaartt__c>>();
+        Map<Id,Project_Smaartt__c> projectMap = new Map<Id,Project_Smaartt__c>();
+        for(Project_Smaartt__c project:[SELECT Id,Name,Actual_Start_Date__c, Actual_Finish_Date__c FROM Project_Smaartt__c]){
+            projectMap.put(project.Id, project);
+        }
+        for(Epic_Smaartt__c epic :[SELECT Id,Name,Actual_Start_Date__c, Actual_Finish_Date__c, Project__c, Project__r.Name  FROM Epic_Smaartt__c]){
+            String projectId = epic.Project__c != null ? epic.Project__c: null;
+            if(!projToEpics.containsKey(projectMap.get(projectId))){
+                projToEpics.put(projectMap.get(projectId), new List<Epic_Smaartt__c>{epic});
+            }else{
+                projToEpics.get(projectMap.get(projectId)).add(epic);
+            }
+        }
+	----------------------------OR----------------------
+	
+	@AuraEnabled
     public static Map<String,list<User>> getDepartmentUsers() {
      Showing department wise users where department is in a key and users are in list in a map of MAp<String,List<User>>   
         Map<String,String> userDeptIdMap = new Map<String,String>();
